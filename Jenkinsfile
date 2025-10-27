@@ -3,16 +3,6 @@ pipeline {
 
     stages {
         stage('Test') {
-            steps {
-                sh '''
-                echo "Without Docker"
-                ls -la
-                touch comtainer-no.txt
-                '''
-            }
-        }
-
-        stage('Test') {
             agent {
                 docker {
                     image 'node:18-alpine'
