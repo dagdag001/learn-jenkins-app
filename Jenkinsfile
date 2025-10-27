@@ -2,10 +2,49 @@ pipeline {
     agent any
 
     stages {
-        stage('Hello') {
+        stage('Test') {
             steps {
-                echo 'Hello World'
+                sh '''
+                echo "Without Docker"
+                ls -la
+                touch comtainer-no.txt
+                '''
             }
+        }
+
+        stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                #test -f build/index.html
+                npm test
+                '''
+            }
+        }
+         stage('E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                npm i -g serve 
+                serve -s build
+                npx playwright test
+                '''
+            }
+        }
+    }
+    post {
+        always {
+            junit 'test-results/junit.xml'
         }
     }
 }
