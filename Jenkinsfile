@@ -15,6 +15,16 @@ pipeline {
                 '''
             }
         }
+        stage('Build') {
+  steps {
+    script {
+      docker.image('node:18-alpine').inside {
+        sh 'npm run build'
+      }
+    }
+  }
+}
+
 
         stage('Test') {
             agent {
